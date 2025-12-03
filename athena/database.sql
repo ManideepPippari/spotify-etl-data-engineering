@@ -1,0 +1,1 @@
+CREATE DATABASE IF NOT EXISTS spotify_etl_db;

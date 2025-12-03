@@ -1,0 +1,123 @@
+# EventBridge Setup — Spotify ETL Data Engineering
+
+This document describes how to configure Amazon EventBridge to trigger the Spotify ETL Lambda function on a schedule.
+
+--------------------------------------------------
+1. Prerequisites
+--------------------------------------------------
+- An AWS account with access to:
+  - Amazon EventBridge
+  - AWS Lambda
+  - CloudWatch Logs
+- A deployed Lambda function that starts the Spotify ETL ingestion:
+  - Example name: spotify_ingest_lambda
+  - Example handler: spotify_ingest_lambda.lambda_handler
+- AWS CLI installed and configured on your machine:
+  - aws configure (set access key, secret, region, output format)
+
+--------------------------------------------------
+2. Create the EventBridge Rule (schedule trigger)
+--------------------------------------------------
+We use a scheduled rule to trigger the Lambda every hour.
+
+1) Save the file 'eventbridge_rule.json' in this folder.
+
+2) From a terminal in the project root run:
+
+   aws events put-rule \
+     --cli-input-json file://Eventbridge/eventbridge_rule.json
+
+3) Note the ARN returned from the command.
+   Example:
+   arn:aws:events:us-east-2:123456789012:rule/spotify-etl-hourly-trigger
+
+This ARN will be used when adding the Lambda target.
+
+--------------------------------------------------
+3. Add the Lambda target to the rule
+--------------------------------------------------
+We now tell EventBridge which Lambda function to call when the rule fires,
+and what payload to send.
+
+Replace:
+- <ACCOUNT_ID> with your AWS account ID
+- <REGION> with your AWS region (e.g. us-east-2)
+- <LAMBDA_NAME> with your actual Lambda function name
+
+Example command:
+
+   aws events put-targets \
+     --rule spotify-etl-hourly-trigger \
+     --targets '[
+       {
+         "Id": "spotify-etl-lambda-target",
+         "Arn": "arn:aws:lambda:<REGION>:<ACCOUNT_ID>:function/<LAMBDA_NAME>",
+         "Input": "{\"source\":\"spotify-etl\",\"detail-type\":\"scheduled-etl-run\",\"detail\":{\"pipeline\":\"spotify_tracks\",\"stage\":\"ingest\"}}"
+       }
+     ]'
+
+Notes:
+- The "Input" field is a JSON string that will be delivered to the Lambda
+  as the event object. It tells the Lambda that this is a scheduled ETL run.
+
+--------------------------------------------------
+4. Grant EventBridge permission to invoke Lambda
+--------------------------------------------------
+Lambda must explicitly allow EventBridge to call it.
+
+Replace:
+- <ACCOUNT_ID>, <REGION>, <LAMBDA_NAME> as before.
+
+Run:
+
+   aws lambda add-permission \
+     --function-name <LAMBDA_NAME> \
+     --statement-id spotify-etl-eventbridge \
+     --action "lambda:InvokeFunction" \
+     --principal events.amazonaws.com \
+     --source-arn arn:aws:events:<REGION>:<ACCOUNT_ID>:rule/spotify-etl-hourly-trigger
+
+--------------------------------------------------
+5. How it fits into the Spotify ETL pipeline
+--------------------------------------------------
+- EventBridge rule: 'spotify-etl-hourly-trigger'
+- Fires every hour (rate(1 hour)).
+- Invokes the Lambda function that:
+  - Calls the Spotify API or reads from S3
+  - Writes raw / processed files to the S3 'raw' or 'processed' bucket
+- Downstream tools (Glue, Athena, Snowflake, Databricks, Airflow) consume
+  these files as part of the larger ETL pipeline.
+
+--------------------------------------------------
+6. Verifying the setup
+--------------------------------------------------
+1) In AWS Console, go to:
+   - Amazon EventBridge -> Rules
+   - Confirm 'spotify-etl-hourly-trigger' is ENABLED.
+
+2) Go to Lambda -> your <LAMBDA_NAME> -> Monitor -> CloudWatch Logs.
+   - Wait for the next scheduled time.
+   - Verify that the Lambda is being invoked by EventBridge
+     and that it executes without errors.
+
+3) Check the S3 bucket for new files (e.g. 'tracks_raw_from_lambda.csv'
+   or 'tracks_transformed.csv') being written on schedule.
+
+--------------------------------------------------
+7. Disabling or modifying the schedule
+--------------------------------------------------
+- To disable the rule:
+
+   aws events disable-rule --name spotify-etl-hourly-trigger
+
+- To re-enable the rule:
+
+   aws events enable-rule --name spotify-etl-hourly-trigger
+
+- To change the frequency:
+  - Edit 'eventbridge_rule.json' (ScheduleExpression) and run put-rule again, or
+  - Update the rule from the AWS Console (Edit -> Schedule pattern).
+
+--------------------------------------------------
+End of document.
+--------------------------------------------------

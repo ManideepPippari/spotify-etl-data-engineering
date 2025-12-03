@@ -1,0 +1,22 @@
+GLUE TABLE SCHEMA — processed
+--------------------------------
+
+Table Name: processed
+Database: spotify_etl_db
+Location: s3://mani-spotify-etl-data/spotify/processed/
+
+Columns:
+1. artist                 string
+2. artist_id              string
+3. album_name             string
+4. album_id               string
+5. track_name             string
+6. track_id               string
+7. duration_ms            bigint
+8. explicit               boolean
+9. album_release_date     string
+10. track_popularity       bigint
+11. duration_minutes       double
+12. length_category        string
+13. album_track_count      bigint
+14. album_popularity_rank  bigint

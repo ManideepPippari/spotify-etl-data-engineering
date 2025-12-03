@@ -1,0 +1,86 @@
+version: "3.8"
+
+x-airflow-common: &airflow-common
+  image: apache/airflow:2.10.2
+  environment:
+    # Airflow core settings
+    AIRFLOW__CORE__EXECUTOR: LocalExecutor
+    AIRFLOW__CORE__DAGS_ARE_PAUSED_AT_CREATION: "true"
+    AIRFLOW__CORE__LOAD_EXAMPLES: "false"
+    AIRFLOW__CORE__ENABLE_XCOM_PICKLING: "true"
+    AIRFLOW__API__AUTH_BACKENDS: "airflow.api.auth.backend.session"
+
+    # Use Postgres, not sqlite
+    AIRFLOW__DATABASE__SQL_ALCHEMY_CONN: postgresql+psycopg2://airflow:airflow@postgres/airflow
+    AIRFLOW__DATABASE__LOAD_DEFAULT_CONNECTIONS: "false"
+
+    # Region only (safe)
+    AWS_DEFAULT_REGION: us-east-2
+
+    # Install extra Python deps inside the Airflow image
+    _PIP_ADDITIONAL_REQUIREMENTS: >
+      -r /opt/airflow/requirements.txt
+
+  volumes:
+    # Map your local Airflow folders
+    - ../airflow/dags:/opt/airflow/dags
+    - ../airflow/logs:/opt/airflow/logs
+    - ../airflow/plugins:/opt/airflow/plugins
+
+    # Give the container access to requirements.txt
+    - ../airflow/requirements.txt:/opt/airflow/requirements.txt
+
+    # 🔥 This is the important part: mount src so imports like from ingestion... work
+    - ../src:/opt/airflow/src
+    - "C:\\Users\\manip\\.aws:/home/airflow/.aws:ro"
+
+  user: "50000:0"
+  depends_on:
+    postgres:
+      condition: service_healthy
+
+services:
+  postgres:
+    image: postgres:14
+    environment:
+      POSTGRES_USER: airflow
+      POSTGRES_PASSWORD: airflow
+      POSTGRES_DB: airflow
+    healthcheck:
+      test: ["CMD", "pg_isready", "-U", "airflow"]
+      interval: 10s
+      retries: 5
+    volumes:
+      - postgres-db-volume:/var/lib/postgresql/data
+
+  airflow-init:
+    <<: *airflow-common
+    entrypoint: /bin/bash
+    command:
+      - -c
+      - |
+        airflow db init &&
+        airflow users create \
+          --username admin \
+          --firstname Admin \
+          --lastname User \
+          --role Admin \
+          --email admin@example.com \
+          --password admin
+
+  airflow-webserver:
+    <<: *airflow-common
+    command: webserver
+    ports:
+      - "8080:8080"
+
+  airflow-scheduler:
+    <<: *airflow-common
+    command: scheduler
+
+  airflow-triggerer:
+    <<: *airflow-common
+    command: triggerer
+
+volumes:
+  postgres-db-volume:

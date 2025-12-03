@@ -1,0 +1,46 @@
+AWS GLUE CRAWLER CONFIGURATION
+-----------------------------------------
+
+Crawler Name:
+    spotify-etl-crawler
+
+AWS Region:
+    us-east-2
+
+IAM Role:
+    AWSGlueServiceRole-spotify-etl (or the role you created)
+
+Data Source (S3 Target):
+    s3://mani-spotify-etl-data/spotify/processed/
+
+Include Patterns:
+    *.csv
+
+Crawler Source Type:
+    Data Stores (S3)
+
+Database Created / Updated:
+    spotify_etl_db
+
+Table(s) Created:
+    processed
+
+Schema Detection:
+    Infer schema automatically (Glue built-in classifier)
+
+Schedule:
+    On-demand (triggered by Airflow)
+
+Recrawl Behavior:
+    Crawl all folders
+
+Schema Change Policy:
+    Delete behavior  : Inherit (default)
+    Update behavior  : Update in-place
+
+Lineage:
+    Enabled (Glue Catalog)
+
+Tags:
+    project = spotify_etl
+    environment = local_orchestrated

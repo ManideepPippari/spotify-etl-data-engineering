@@ -1,0 +1,19 @@
+# Ignore credentials
+*.json
+*.env
+**/users.json
+**/lambda_config.json
+**/lambda_policy.json
+*/config.py
+
+# Ignore Python cache
+_pycache_/
+*.pyc
+
+# Ignore VS Code & OS files
+.vscode/
+.DS_Store
+
+# Ignore temp files
+output/
+logs/
