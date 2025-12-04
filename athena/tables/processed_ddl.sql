@@ -22,7 +22,7 @@ OUTPUTFORMAT
 LOCATION
   's3://mani-spotify-etl-data/spotify/processed/'
 TBLPROPERTIES (
-  'CRAWL_RUN_ID'='3fc8863f-68d6-41d3-9d23-12a68ac85258', 
+  'CRAWL_RUN_ID'='ID', 
   'CrawlerSchemaDeserializerVersion'='1.0', 
   'CrawlerSchemaSerializerVersion'='1.0', 
   'UPDATED_BY_CRAWLER'='spotify-etl-crawler', 

@@ -174,7 +174,7 @@ def trigger_databricks_job(**context):
     Uses the HTTP connection databricks_spotify.
     """
     # 👉 Replace with your actual Job ID if different
-    DATABRICKS_JOB_ID = 233494880762852
+    DATABRICKS_JOB_ID = ID
 
     hook = HttpHook(http_conn_id="databricks_spotify", method="POST")
 
@@ -291,7 +291,7 @@ with DAG(
     default_args=default_args,
     description="Local Spotify extract orchestrated by Airflow",
     start_date=datetime(2025, 11, 27),
-    schedule_interval=None, 
+    schedule_interval=NONE, 
     catchup=False,
     max_active_runs=1,
 ) as dag:

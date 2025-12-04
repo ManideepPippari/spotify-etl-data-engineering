@@ -1,0 +1,23 @@
+{
+  "WorkGroup": {
+    "Name": "spotify-analytics-wg",
+    "State": "ENABLED",
+    "Description": "Workgroup for Spotify ETL analytics queries",
+    "CreationTime": "2025-11-30T00:00:00Z",
+    "Configuration": {
+      "EnforceWorkGroupConfiguration": false,
+      "PublishCloudWatchMetricsEnabled": true,
+      "RequesterPaysEnabled": false,
+      "ResultConfiguration": {
+        "OutputLocation": "s3://mani-spotify-etl-data/spotify/athena-results/",
+        "EncryptionConfiguration": {
+          "EncryptionOption": "SSE_S3"
+        }
+      },
+      "EngineVersion": {
+        "SelectedEngineVersion": "AUTO",
+        "EffectiveEngineVersion": "Athena engine version 3"
+      }
+    }
+  }
+}

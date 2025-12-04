@@ -1,19 +1,30 @@
-# Ignore credentials
-*.json
-*.env
-**/users.json
-**/lambda_config.json
-**/lambda_policy.json
-*/config.py
-
-# Ignore Python cache
+# Python
 _pycache_/
-*.pyc
+*.py[cod]
+*.pyo
+*.pyd
+*.pytest_cache
+*.egg-info/
 
-# Ignore VS Code & OS files
+# Jupyter
+.ipynb_checkpoints/
+
+# VSCode
 .vscode/
-.DS_Store
 
-# Ignore temp files
-output/
+# Environment
+.env
+*.env
+
+# Data dumps (keep only curated samples)
+data/
+*.parquet
+*.log
+
+# Docker / Airflow
 logs/
+dags/output/
+
+# OS
+.DS_Store
+Thumbs.db
