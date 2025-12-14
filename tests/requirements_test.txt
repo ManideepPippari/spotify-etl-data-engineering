@@ -1,0 +1,21 @@
+# Unit test dependencies for this repo
+pytest==8.3.3
+pytest-cov==5.0.0
+pytest-mock==3.14.0
+
+# HTTP mocking (pick ONE; requests-mock is enough for you)
+requests-mock==1.12.1
+
+# AWS mocking (only what we need)
+moto[s3]==5.0.20
+boto3==1.35.0
+
+# Data handling used by transforms/tests
+pandas==2.2.3
+
+# Local extraction client (only if tests import it)
+spotipy==2.23.0
+
+# Optional utilities
+python-dotenv==1.0.1
+freezegun==1.5.1

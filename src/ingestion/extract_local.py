@@ -4,10 +4,7 @@ import spotipy
 from spotipy.oauth2 import SpotifyClientCredentials
 import pandas as pd
 
-from src.config import (
-    SPOTIFY_CLIENT_ID,
-    SPOTIFY_CLIENT_SECRET,
-)
+from config import SPOTIFY_CLIENT_ID, SPOTIFY_CLIENT_SECRET
 
 def get_spotify_client():
     """

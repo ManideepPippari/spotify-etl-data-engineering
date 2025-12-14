@@ -1,5 +1,11 @@
 🎵 Spotify End-to-End Data Engineering Pipeline (Production-Grade)
 
+![Tests](https://img.shields.io/badge/tests-passing-brightgreen)
+![Python](https://img.shields.io/badge/python-3.9+-blue)
+![AWS](https://img.shields.io/badge/AWS-S3%20%7C%20Lambda%20%7C%20Glue%20%7C%20Athena-orange)
+![Databricks](https://img.shields.io/badge/Databricks-PySpark-red)
+![Snowflake](https://img.shields.io/badge/Snowflake-ELT-blue)
+![PowerBI](https://img.shields.io/badge/Power%20BI-Dashboard-yellow)
 
 AWS S3 | Lambda | EventBridge | Glue | Athena | Docker Airflow | Snowflake | Databricks (PySpark) | Power BI
 
@@ -7,6 +13,22 @@ This project demonstrates a full, enterprise-level ETL + ELT pipeline, ingesting
 
 Built using 11 industry technologies, this system simulates what a real Data Engineering team builds for scalable analytics.
 
+Note: This is a portfolio project designed to demonstrate real-world data engineering patterns, tooling integration, and production-style workflows. All infrastructure was created, validated, and deprovisioned responsibly to avoid unnecessary cloud costs.
+
+
+🎯 Project Intent
+
+This project was built to mirror how modern data engineering teams design, test, and operate analytics pipelines in production environments.
+
+The focus areas include:
+	•	End-to-end pipeline architecture
+	•	Cross-platform data movement (AWS → Databricks → Snowflake → BI)
+	•	Bronze / Silver / Gold data modeling
+	•	Data quality validation across systems
+	•	Cost-aware cloud usage and deprovisioning
+	•	Clear documentation and testability
+
+This is not a tutorial project, but a realistic, production-style system suitable for portfolio review and technical interviews.
 
 
 🧠 High-Level Architecture
@@ -40,14 +62,14 @@ CI/CD: Git + GitHub
 
 spotify-etl-data-engineering/
 │
-├── src/                       # Local Spotify ingestion + transform scripts
+├── src/                       # Local ingestion & transformation logic
 │   ├── ingestion/
 │   ├── transform/
 │   └── config.py
 │
-├── lambda/                    # Lambda ingestion + transform code + configs
+├── lambda/                    # AWS Lambda ingestion & transform functions
 │
-├── Eventbridge/               # EventBridge schedule + setup docs
+├── Eventbridge/               # EventBridge schedules & setup docs
 │
 ├── glue/
 │   ├── crawler_config.json
@@ -74,11 +96,15 @@ spotify-etl-data-engineering/
 │   ├── tables/
 │   └── results_samples/
 │
-├── dags/                      # Airflow DAG + CSV sample
+├── dags/                      # Airflow DAGs
 │
-├── s3/                        # Local copies of S3 objects
+├── s3/                        # Local S3 object samples
 │
-└── powerbi/                  
+├── powerbi/                   # Power BI dashboards & screenshots
+│
+├── IMPLEMENTATION_GUIDE.md    # Testing & validation notes
+├── PERFORMANCE_METRICS.md     # Performance & cost observations
+└── README.md               
 
 
 
@@ -87,23 +113,23 @@ spotify-etl-data-engineering/
 Python | Spotify API
 
 Features
-	•	Fetches Top Tracks from multiple artists
-	•	Gets Access Token automatically
-	•	Saves tracks_raw.csv and tracks_processed.csv
-	•	Environment-variable driven (no secrets in repo)
+	•	Fetches top tracks from multiple artists
+	•	Automatically retrieves OAuth access tokens
+	•	Saves raw and processed CSV outputs
+	•	Fully environment-variable driven (no secrets in repo)
 
-AWS Lambda Ingest Function
+AWS Lambda Ingest
 	•	Calls Spotify API
-	•	Writes processed tracks to S3 → spotify/processed/
+	•	Cleans and structures data
+	•	Writes processed output to S3 (spotify/processed/)
 
 EventBridge Integration
-	•	Runs Lambda every hour
-	•	JSON config included:
-	•	eventbridge_schedule.json
-	•	Full setup instructions
+	•	Scheduled hourly execution
+	•	JSON configuration included
+	•	End-to-end setup documentation provided
 
 
-☁ AWS Layer
+☁ AWS Data Layer
 
 spotify/
     raw/
@@ -111,72 +137,64 @@ spotify/
     transformed/
     athena-results/
 
-    🟣  AWS Glue & Athena (Data Discovery + SQL Analytics)
+    🟣  AWS Glue & Athena 
 
 Glue Crawler
-	•	Auto-creates schema for processed and transformed tables
-	•	All configurations stored:
-	•	crawler_config.json
-	•	processed_schema.json
-	•	transformed_schema.json
+	•	Automatically infers schemas
+	•	Creates processed and transformed tables
+	•	Configuration files included
 
 Athena
-	•	Workgroup: spotify-analytics-wg
-	•	Output path: /spotify/athena-results/
-	•	Includes:
-	•	DDL for both tables
-	•	Artist analytics SQL
-	•	Top 10 artist stats result CSV
+	•	Dedicated analytics workgroup
+	•	Predefined SQL analytics queries
+	•	Sample query results included
+
 
 
 ⚙ Orchestration
-    🟢 4. Airflow (Docker) Orchestration
+    🟢 Airflow (Docker)
 
-Airflow DAG does:
-	1.	Run local Spotify extract → CSV
-	2.	Upload CSV to S3
-	3.	Trigger Glue Crawler
-	4.	Run Athena Query
-	5.	Trigger Databricks workflow
-	6.	Run Snowflake procedures
-	7.	Run Data Quality Checks
-	8.	Final summary output
+The Airflow DAG orchestrates the full pipeline:
+	1.	Run local Spotify extraction
+	2.	Upload data to S3
+	3.	Trigger Glue crawler
+	4.	Execute Athena analytics
+	5.	Trigger Databricks workflows
+	6.	Execute Snowflake procedures
+	7.	Run data quality checks
+	8.	Produce final pipeline summary
 
 Folder: dags/spotify_etl_dag.py
 Includes:
 	•	XCom usage
-	•	SnowflakeOperator
-	•	HTTP Hook for Databricks
-	•	Retry & error handling
-	•	Full documentation
+	•	Snowflake operators
+	•	HTTP hooks (Databricks)
+	•	Retry logic & error handling
+	•	Inline documentation
 
 
 🔥 Databricks
 PySpark | Delta-Lake
 
-Notebook:
+Notebook Assets
+	•	Spotify_Spark_Processing.ipynb
+	•	Python script version
+	•	HTML export
 
-✔ Spotify_Spark_Processing.ipynb
-✔ .py version
-✔ HTML export version
+Bronze Layer
+	•	Raw ingest from S3
+	•	Table: spotify_tracks_bronze
 
-
-🥉 BRONZE — Raw ingest
-	•	Created table: spotify_tracks_bronze
-	•	COPY INTO from S3 processed
-
-🥈 SILVER — Cleaned & typed
-	•	Deduping
+Silver Layer
+	•	Deduplication
 	•	Type casting
-	•	Calculated fields
+	•	Calculated columns
 	•	Table: spotify_tracks_silver
 
-🥇 GOLD — Analytics-ready
+Gold Layer
+	•	Aggregations & analytics features
 	•	Table: spotify_tracks_gold
-	•	Aggregates
-	•	Feature engineering
-	•	Joins
-	•	Popularity summary table
+	•	Popularity summary outputs
 
 Databricks job config also included:
 	•	cluster config markdown
@@ -186,59 +204,104 @@ Databricks job config also included:
 
 
 ❄ Snowflake
-Warehouse | ELT | Tasks
+Warehouse | ELT | Automation
 
-✔ Database
-✔ Schema
-✔ Warehouse
-✔ File formats
-✔ Stages
-✔ Tables (Bronze, Silver, Gold, Raw, History)
-✔ Views
-✔ Stored Procedures
-✔ Tasks (scheduled pipelines)
-✔ DQ checks
-✔ Result samples
+Includes:
+	•	Database, schema, warehouse setup
+	•	External stages & file formats
+	•	Bronze / Silver / Gold tables
+	•	Stored procedures
+	•	Scheduled tasks
+	•	Data quality checks
+	•	Result samples
 
 
 📊 Power BI
-Visualization
 
-/powerbi/
-    spotify_dashboard.pbix
-    screenshots/
+Analytics & Visualization
 
-	•	Top Artists by Popularity
-	•	Track Duration Distribution
-	•	Explicit vs Non-Explicit Analysis
-	•	Bronze → Silver → Gold Row Counts
-	•	Release Timeline
+Dashboards include:
+	•	Artist popularity
+	•	Track duration distribution
+	•	Explicit vs non-explicit analysis
+	•	Bronze → Silver → Gold row comparison
+	•	Release trends
 
 
- 🧪 8. Data Quality Checks (Across Platforms)
+ 🧪 Data Quality Checks (Across Platforms)
 
-You included:
-	•	Athena row count
-	•	Snowflake row count
-	•	Cross-system DQ check
-	•	Gold table summary
-	•	Popularity stats analytics
+Implemented validations include:
+	•	Athena vs Snowflake row counts
+	•	Gold-layer aggregation checks
+	•	Popularity summary verification
+	•	Sample DQ outputs included
 
 
-🎬 9. Demo Video
+
+	🧪 Testing & Quality Assurance
+
+This project includes a focused, practical test suite to validate core pipeline logic
+without requiring live cloud infrastructure.
+
+Validated components include:
+	•	Spotify ingestion (local & Lambda)
+	•	Transformation logic (duration, categorization, timestamps)
+	•	S3-triggered Lambda behavior
+	•	Error-handling scenarios
+
+Run Tests:
+pip install -r tests/requirements_test.txt
+pytest -q
+
+Run specific tests:
+pytest tests/test_extract_local.py -q
+pytest tests/test_spotify_lambda_ingest.py -q
+pytest tests/test_spotify_lambda_transform.py -q
+
+📖 Detailed testing notes: IMPLEMENTATION_GUIDE.md
+
+
+
+📊 Performance & Cost Notes 
+
+Pipeline execution behavior and cost considerations were evaluated during development.
+	•	End-to-end pipeline validated successfully
+	•	Data quality confirmed across platforms
+	•	Infrastructure deprovisioned after validation
+
+📊 Full details available in PERFORMANCE_METRICS.md
+
+
+🔐 Environment Configuration
+
+All credentials are handled via environment variables only.
+No secrets are committed to this repository.
+
+Example:
+SPOTIFY_CLIENT_ID=your_client_id
+SPOTIFY_CLIENT_SECRET=your_client_secret
+
+AWS_ACCESS_KEY_ID=your_key
+AWS_SECRET_ACCESS_KEY=your_secret
+AWS_DEFAULT_REGION=us-east-2
+
+S3_BUCKET_NAME=your-bucket
+
+
+🎬 Demo Video
 
 /demo/
    pipeline_demo.mp4
 
 
 
-🧩 10. How to Run This Project (Locally / Cloud)
+🧩 How to Run This Project (Locally / Cloud)
 
 Local (Airflow + Docker)
 docker-compose up -d
 
-Upload DAG:
-dags/spotify_etl_dag.py
+Upload DAG: dags/spotify_etl_dag.py
 
-Check UI:
-localhost:
+Access UI: http://localhost:8080
+
+Quick Validation: pytest -q

@@ -1,0 +1,62 @@
+# -------------------------
+# Python
+# -------------------------
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+.pytest_cache/
+*.egg-info/
+
+# Virtual environments
+.venv/
+venv/
+env/
+
+# Jupyter
+.ipynb_checkpoints/
+
+# -------------------------
+# Editor / IDE
+# -------------------------
+.vscode/
+.idea/
+
+# -------------------------
+# Environment / secrets
+# -------------------------
+.env
+.env.*
+*.env
+
+# -------------------------
+# OS files
+# -------------------------
+.DS_Store
+Thumbs.db
+
+# -------------------------
+# Logs / runtime outputs
+# -------------------------
+*.log
+logs/
+dags/output/
+output/
+
+# -------------------------
+# Data files (avoid committing generated dumps)
+# -------------------------
+*.parquet
+*.csv
+
+# ✅ Keep curated CSVs used by Power BI dashboards
+!powerbi/**/*.csv
+
+# Optional: keep curated CSV samples under databricks result_samples (if you want them public)
+!databricks/result_samples/**/*.csv
+
+# -------------------------
+# (Optional) Airflow local state (if you ever run Airflow locally)
+# -------------------------
+airflow.db
+webserver_config.py

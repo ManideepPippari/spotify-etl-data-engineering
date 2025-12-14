@@ -173,8 +173,8 @@ def trigger_databricks_job(**context):
     Trigger the Databricks job that loads bronze/silver/gold.
     Uses the HTTP connection databricks_spotify.
     """
-    # 👉 Replace with your actual Job ID if different
-    DATABRICKS_JOB_ID = ID
+
+    DATABRICKS_JOB_ID = int(os.environ["DATABRICKS_JOB_ID"])
 
     hook = HttpHook(http_conn_id="databricks_spotify", method="POST")
 
@@ -291,7 +291,7 @@ with DAG(
     default_args=default_args,
     description="Local Spotify extract orchestrated by Airflow",
     start_date=datetime(2025, 11, 27),
-    schedule_interval=NONE, 
+    schedule_interval=None, 
     catchup=False,
     max_active_runs=1,
 ) as dag:

@@ -1,11 +1,7 @@
 import os
 import boto3
 
-from src.config import (
-    S3_BUCKET_NAME,
-    S3_PROCESSED_PREFIX,
-)
-
+from config import S3_BUCKET_NAME, S3_PROCESSED_PREFIX
 
 # Re-use a single S3 client
 s3_client = boto3.client("s3")
