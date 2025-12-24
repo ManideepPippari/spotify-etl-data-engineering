@@ -288,10 +288,20 @@ AWS_DEFAULT_REGION=us-east-2
 S3_BUCKET_NAME=your-bucket
 
 
-🎬 Demo Video
+🎥 End-to-End Pipeline Demo (4 minutes)
 
-/demo/
-   pipeline_demo.mp4
+📌 **Watch the full automated pipeline walkthrough:**  
+▶️ [`pipeline_demo.mp4`](demo/pipeline_demo.mp4)
+
+This video demonstrates:
+- Apache Airflow orchestration (Dockerized)
+- Spotify API ingestion using Python
+- Databricks Bronze → Silver → Gold processing
+- AWS Glue crawler automation
+- Analytics validation in Athena & Snowflake
+- Production-style end-to-end execution
+
+The demo shows a real pipeline run with orchestration, processing, and validation — not static screenshots.
 
 
 
